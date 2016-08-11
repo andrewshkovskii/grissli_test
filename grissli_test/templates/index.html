@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="static/bower_components/bootstrap/dist/css/bootstrap.min.css" media="all"/>
+    <link rel="stylesheet" type="text/css" href="static/bower_components/datetimepicker/build/jquery.datetimepicker.min.css" media="all"/>
+
+    <script type="text/javascript" src="static/bower_components/jquery/dist/jquery.min.js"> </script>
+    <script type="text/javascript" src="static/bower_components/datetimepicker/build/jquery.datetimepicker.full.min.js"> </script>
+    <script type="text/javascript" src="static/js/index.js"> </script>
+
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-4">
+          <h4>Форма ввода данных</h4>
+          <form class="form" id="form">
+            <div class="form-group">
+              <label for="url-1">URL 1</label>
+              <input type="url" class="form-control url-input" id="url-1" placeholder="URL 1" value="http://hantim.ru">
+            </div>
+            <div class="form-group">
+              <label for="url-2">URL 2</label>
+              <input type="url" class="form-control url-input" id="url-2" placeholder="URL 2" value="http://habrahabr.ru">
+            </div>
+            <div class="form-group">
+              <label for="url-3">URL 3</label>
+              <input type="url" class="form-control url-input" id="url-3" placeholder="URL 3" value="http://grissli.ru/#">
+            </div>
+            <div class="form-group">
+              <label for="url-4">URL 4</label>
+              <input type="url" class="form-control url-input" id="url-4" placeholder="URL 4">
+            </div>
+            <div class="form-group">
+              <label for="url-5">URL 5</label>
+              <input type="url" class="form-control url-input" id="url-5" placeholder="URL 5">
+            </div>
+            <div class="form-group">
+              <label for="datetime">Дата и время обработки</label>
+              <input type="datetime-local" class="form-control" id="datetime" placeholder="Дата и время обработки">
+            </div>
+            <button type="submit" class="btn btn-default">Ок</button>
+          </form>
+        </div>
+        <div class="col-md-8">
+
+          <h4 id="results-header">Результаты обработки</h4>
+
+          <div id="results" class="col-md-12"></div>
+
+          <nav>
+            <ul class="pagination">
+            </ul>
+          </nav>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
