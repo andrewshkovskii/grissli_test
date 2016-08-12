@@ -2,6 +2,7 @@ FROM ubuntu:16.04
 RUN apt-get update -y\
   && apt-get install -y python3 python3-pip \
   && apt-get install -y nodejs npm \
+  && apt-get install -y git \
   && apt-get clean \
   && apt-get autoremove \
   && rm -rf /tmp/* /var/tmp/*
