@@ -104,9 +104,9 @@
       if (message == 'status_change') {
         var status = payload['status'];
         if (url) {
-
-          url['status'] = status;
           var template = url[1];
+          url = url[0];
+          url['status'] = status;
           var $title = template.find('.url-title');
           var $status = template.find('.url-status');
           var $h1 = template.find('.url-h1');
@@ -151,7 +151,8 @@
       var $parent = $btn.parents('.url-block');
       var uuid = $parent.attr('id');
       var url = urls[uuid][0];
-      if (url['status'] == 'done' || url['status'] == 'error' || url['status'] == 'fail_to_cancel' || url['status'] == 'cancel') {
+      var status = url['status'];
+      if (status == 'done' || status == 'error' || status == 'fail_to_cancel' || status == 'cancel') {
         alert('Невозможно отправить запрос на отмену обработки')
       } else {
         $.post('url/{0}/cancel/'.format(uuid), function (data, status, jqXHR) {
