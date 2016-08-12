@@ -20,7 +20,7 @@
     var i, j;
     var pages = [];
     for (i = 0, j = array.length; i < j; i += chunk) {
-      pages.push(array.slice(i, i + chunk);)
+      pages.push(array.slice(i, i + chunk))
     }
     return pages;
   };
