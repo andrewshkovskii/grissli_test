@@ -125,9 +125,9 @@ class URL:
             image_path = os.path.join('images', image_path)
 
         data = {
-            'uuid': str(self.uuid),
+            'uuid': self.uuid,
             'url': self.url,
-            'status': str(self.status),
+            'status': self.status_display(),
             'title': self.title,
             'h1': self.h1,
             'image_src': self.image_src,
@@ -149,6 +149,10 @@ class URL:
         if image_src:
             self.image_src = urljoin(self.url, image_src)
         return None
+
+    def status_display(self):
+        """Возвращает строковое представления статуса"""
+        return str(self.status)
 
 
 def parse_html(html):
@@ -339,7 +343,7 @@ class Parsman:
         future = asyncio.ensure_future(self.download(url.uuid),
                                        loop=self.app.loop)
         url.future = future
-        payload = {'status': str(URLStatus.DOWNLOADING), 'uuid': url.uuid}
+        payload = {'status': url.status_display(), 'uuid': url.uuid}
         self.message('status_change', payload)
         return url
 
@@ -355,8 +359,8 @@ class Parsman:
                 if url.date > datetime.utcnow():
                     continue
 
-                payload = {'status': str(URLStatus.PARSING), 'uuid': uuid}
                 url.status = URLStatus.PARSING
+                payload = {'status': url.status_display(), 'uuid': uuid}
                 self.message('status_change', payload)
                 # Запускаем парсинг в отдельном процессе
                 future = self.executor.submit(parse_html, url.html)
@@ -387,7 +391,7 @@ class Parsman:
                 status = URLStatus.DOWNLOADED
 
             url.status = status
-            payload = {'status': str(status), 'uuid': uuid}
+            payload = {'status': url.status_display(), 'uuid': uuid}
             self.message('status_change', payload)
         return None
 
@@ -399,7 +403,7 @@ class Parsman:
         """
         url = self.urls[uuid]
         url.status = URLStatus.IMAGE_LOAD
-        payload = {'status': str(URLStatus.IMAGE_LOAD), 'uuid': uuid}
+        payload = {'status': url.status_display(), 'uuid': uuid}
         self.message('status_change', payload)
         image_src = url.image_src
         image_name = os.path.basename(image_src)
@@ -436,20 +440,19 @@ class Parsman:
             return None
         if url.status == URLStatus.DONE:
             return None
+
         url.status = URLStatus.CANCEL
-        payload = {'status': str(URLStatus.CANCEL), 'uuid': uuid}
+        payload = {'status': url.status_display(), 'uuid': uuid}
         self.message('status_change', payload)
         future = url.future
         if future:
             # Если удалось отменить
             if future.cancel():
                 url.status = URLStatus.CANCELLED
-                payload = {'status': str(URLStatus.CANCELLED), 'uuid': uuid}
             else:
                 url.status = URLStatus.FAIL_TO_CANCEL
-                payload = {'status': str(URLStatus.FAIL_TO_CANCEL),
-                           'uuid': uuid}
 
+            payload = {'status': url.status_display(), 'uuid': uuid}
             self.message('status_change', payload)
         return None
 
@@ -467,13 +470,12 @@ class Parsman:
                 title, h1, src = future.result()
             except Exception as e:
                 status = URLStatus.ERROR
-                payload = {'status': str(URLStatus.ERROR), 'uuid': uuid}
+                payload = {'uuid': uuid}
                 url.error = ERROR_PARSING.format(e)
             else:
                 status = URLStatus.DONE_PARSING
                 payload = {'uuid': uuid, 'title': title,
-                           'h1': h1, 'image_src': src,
-                           'status': str(URLStatus.DONE_PARSING)}
+                           'h1': h1, 'image_src': src}
                 url.set_parse_result(title, h1, src)
 
                 # Отправим на дальнейшую обработку для скачивания изображения
@@ -482,6 +484,7 @@ class Parsman:
                 url.future = future
 
             url.status = status
+            payload['status'] = url.status_display()
             self.message('status_change', payload, True)
         return None
 
