@@ -10,7 +10,7 @@ def main():
     app = loop.run_until_complete(create_app(loop))
     handler = app.make_handler()
     server = loop.run_until_complete(loop.create_server(
-        handler, '127.0.0.1', 8000))
+        handler, '0.0.0.0', 8000))
 
     def ask_exit(signame):
         """Остановить эвент-луп при получении сигнала остановки."""
