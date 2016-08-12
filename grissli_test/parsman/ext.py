@@ -56,6 +56,7 @@ class URLStatus(Enum):
     def __str__(self):
         return self.value
 
+
 # Шаблоны сообщение об ошибках
 ERROR_IMAGE_IO = 'Не смогли сохранить изображение на сервере ({0})'
 ERROR_IMAGE_HTTP = 'Не смогли загрузить изображение на сервер ({0})'
