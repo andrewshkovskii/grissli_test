@@ -362,7 +362,7 @@ class Parsman:
                 future = self.executor.submit(parse_html, url.html)
                 url.future = future
                 # И продолжим обработки как только фьючер закончит
-                future.add_done_callback(partial(self.message_done_parsing,
+                future.add_done_callback(partial(self.done_parsing,
                                                  uuid))
             # Проверяем новые задачи каждые 5 секунд
             await asyncio.sleep(5)
@@ -453,8 +453,8 @@ class Parsman:
             self.message('status_change', payload)
         return None
 
-    def message_done_parsing(self, uuid, future):
-        """Отправить сообщение о завершении парсинга URL
+    def done_parsing(self, uuid, future):
+        """Завершить парсинг URL и начать скачивание изображения
 
         :param uuid: UUID URL
         :param future: Future задачи парсинга URL.
