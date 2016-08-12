@@ -17,11 +17,10 @@
   };
 
   var paginateBy = function (array, chunk) {
-    var i, j, temparray;
+    var i, j;
     var pages = [];
     for (i = 0, j = array.length; i < j; i += chunk) {
-      temparray = array.slice(i, i + chunk);
-      pages.push(temparray)
+      pages.push(array.slice(i, i + chunk);)
     }
     return pages;
   };
@@ -59,6 +58,7 @@
 
     };
 
+    // Создание визуального блока URL
     var createURLBlock = function (url) {
       var template = blockTemplate.format(
           url['status'],
@@ -87,6 +87,7 @@
       redrawPaginator(currentPage)
     };
 
+    // Обработчик событий пагинации
     $(document.body).on('click', '.page-selector', function (event) {
       event.preventDefault();
       var $pageSelector = $(event.target);
@@ -94,6 +95,7 @@
       redrawPaginator(currentPage);
     });
 
+    // Обработчик сообщений из websocket
     var handleMessage = function (evt) {
       var data = JSON.parse(evt.data);
       var message = data['message'];
@@ -143,6 +145,7 @@
     var form = $('#form');
     var urlsInputs = $('.url-input');
 
+    // Обработчик отмены обработки
     $(document.body).on('click', '.cancel', function (event) {
       var $btn = $(event.target);
       var $parent = $btn.parents('.url-block');
