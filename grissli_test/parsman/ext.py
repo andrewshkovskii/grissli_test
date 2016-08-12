@@ -15,14 +15,15 @@
         -   Неплохо было бы добавить логирование
         -   Хорошо бы вынести все настройки путей, портов и адресо в .conf
             файл для облегчения настройки
+        -   Статику отдавать через nginx
 
 """
 import asyncio
 import concurrent.futures
-from enum import Enum
 import json
 import os
 from datetime import datetime
+from enum import Enum
 from functools import partial
 from urllib.parse import urljoin
 from uuid import uuid4
@@ -31,12 +32,14 @@ from aiohttp import ClientSession
 from aiohttp import web
 from aiohttp.errors import HttpProcessingError
 from bs4 import BeautifulSoup
+from dateutil import parser as date_parser
 
 from grissli_test import settings
 
+TEMPLATE_CACHE = {}
+
+
 # Статусы процесса обработки URL
-
-
 class URLStatus(Enum):
     """Статусы обработки URL"""
     DOWNLOADING = 'downloading'
@@ -61,8 +64,6 @@ ERROR_URL_DOWNLOAD = 'Не смогли загрузить содержимое 
 
 # Сообщения для клиентов
 MSG_LIMIT_EXCEED = 'Первышено количество одновременно обрабатываемых URL'
-
-DATE_FORMAT = '%Y-%m-%d %H:%M'
 
 # Количество одновременно обрабатываемых URL
 MAX_ACTIVE = 5
@@ -125,7 +126,6 @@ class URL:
         data = {
             'uuid': str(self.uuid),
             'url': self.url,
-            'date': self.date.strftime(DATE_FORMAT),
             'status': str(self.status),
             'title': self.title,
             'h1': self.h1,
@@ -180,10 +180,16 @@ class Parsman:
         self.app = app
         if self.app:
             self.init_app(self.app)
-        self.executor = concurrent.futures.ProcessPoolExecutor(max_workers=5)
+        self.executor = concurrent.futures.ProcessPoolExecutor()
         self.message_queue = asyncio.Queue()
         self.processing_futures = {}
         self.urls = {}
+        # Инициализация кеша шаблонов
+        template_path = os.path.join(settings.TEMPLATES_DIR, 'index.html')
+        template_file = open(template_path, 'rb')
+        template = template_file.read()
+        template_file.close()
+        TEMPLATE_CACHE[template_path] = template
 
     async def init_app(self, app):
         """Инициировать приложение."""
@@ -266,9 +272,7 @@ class Parsman:
 
         """
         template_path = os.path.join(settings.TEMPLATES_DIR, 'index.html')
-        template_file = open(template_path, 'rb')
-        template = template_file.read()
-        template_file.close()
+        template = TEMPLATE_CACHE[template_path]
         return web.Response(body=template)
 
     async def get_urls(self, request):
@@ -300,8 +304,8 @@ class Parsman:
 
         data = await request.json()
         urls = data['urls']
-        date = datetime.strptime(data['date'], DATE_FORMAT)
 
+        date = date_parser.parse(data['date'])
         added_urls = []
         for url in urls:
             url = self.add_url(url['url'], date)
@@ -337,10 +341,14 @@ class Parsman:
         """Обработчик отложенных задач по парсингу URL"""
         while True:
             for uuid, url in self.urls.items():
+                # Парсингу подвергаются только те url, что были скачаны
                 if url.status != URLStatus.DOWNLOADED:
                     continue
+
+                # И пришло время их парсить
                 if url.date > datetime.now():
                     continue
+
                 payload = {'status': str(URLStatus.PARSING), 'uuid': uuid}
                 url.status = URLStatus.PARSING
                 self.message('status_change', payload)
@@ -350,7 +358,7 @@ class Parsman:
                 # И продолжим обработки как только фьючер закончит
                 future.add_done_callback(partial(self.message_done_parsing,
                                                  uuid))
-            # Проверяем новые задачи каждые 2 секунды
+            # Проверяем новые задачи каждые 5 секунд
             await asyncio.sleep(5)
         return None
 
@@ -472,7 +480,8 @@ class Parsman:
         return None
 
     def message(self, message, payload, no_wait=False):
-        """Отправить сообщение message с нагрузкой payload
+        """Отправить сообщение message с нагрузкой payload для обработке
+        в общей очереди сообщений обработчика
 
         :param message: Текст сообщения
         :param payload: Полезная нагрузка сообщения
