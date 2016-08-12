@@ -129,10 +129,11 @@
     var ws = null;
 
     $.datetimepicker.setLocale('ru');
-    var picker = $('#datetime').datetimepicker({
+    picker = $('#datetime').datetimepicker({
       format: 'Y-m-d H:i',
       value: new Date()
     });
+    console.dir(picker);
 
     var form = $('#form');
     var urlsInputs = $('.url-input');
@@ -191,7 +192,12 @@
         }
       });
 
-      var payload = {'urls': _urls, 'date': picker.val()};
+      // Получаем дату в формате ISO
+      var date = picker.datetimepicker('getValue');
+      date = Date.parse(date);
+      date = new Date(date).toDateString();
+      var payload = {'urls': _urls, 'date': date};
+
       payload = JSON.stringify(payload);
 
       var message = payload['error_message'];
