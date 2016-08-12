@@ -129,11 +129,10 @@
     var ws = null;
 
     $.datetimepicker.setLocale('ru');
-    picker = $('#datetime').datetimepicker({
+    var picker = $('#datetime').datetimepicker({
       format: 'Y-m-d H:i',
       value: new Date()
     });
-    console.dir(picker);
 
     var form = $('#form');
     var urlsInputs = $('.url-input');
@@ -194,8 +193,7 @@
 
       // Получаем дату в формате ISO
       var date = picker.datetimepicker('getValue');
-      date = Date.parse(date);
-      date = new Date(date).toDateString();
+      date = new Date(date).toISOString();
       var payload = {'urls': _urls, 'date': date};
 
       payload = JSON.stringify(payload);
