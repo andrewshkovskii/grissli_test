@@ -41,7 +41,7 @@
     Желательно оформить сервис в систему виртулизации docker­compose, Vagrant и пр...
 
 
-Запуск из тестовой среды:
+**Запуск из тестовой среды:**
   
   Установка зависимостей:
  
@@ -51,11 +51,11 @@
  
     python grissli_test/runserver.py
  
-  или
+  _или_
   
     grissli_test
  
-Запуск через docker:
+**Запуск через docker:**
 
     docker-compose build
     docker-compose up
