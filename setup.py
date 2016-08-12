@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 install_requires = [
     'aiohttp==0.22.5',
     'beautifulsoup4==4.5.1',
-    'click==6.6',
+    'python-dateutil==2.5.3'
 ]
 
 with open('grissli_test/__init__.py', 'r') as fd:
