@@ -24,7 +24,7 @@ setup(
     packages=find_packages(exclude=('',)),
     entry_points={
         'console_scripts': [
-            'grissli_test = grissli_test.runserver',
+            'grissli_test = grissli_test.runserver:main',
         ]
     },
     zip_safe=False,
