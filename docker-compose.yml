@@ -1,0 +1,10 @@
+version: '2'
+services:
+  web:
+    build: .
+    container_name: web
+    ports:
+      - "8000:8000"
+    environment:
+      PYTHONPATH: /opt/grissli_test/
+    command: python3 /opt/grissli_test/grissli_test/runserver.py
