@@ -240,10 +240,8 @@ class Parsman:
         while True:
             message = await self.message_queue.get()
             if message['message'] == 'status_change':
-                payload = message['payload']
-                url = self.urls[payload['uuid']]
                 # Отправим сообщение о смене статуса клиентам
-                self.socket_message('status_change', payload)
+                self.socket_message('status_change', message['payload'])
 
     @asyncio.coroutine
     def handle_sock(self, request):
@@ -305,7 +303,9 @@ class Parsman:
         data = await request.json()
         urls = data['urls']
 
-        date = date_parser.parse(data['date'])
+        # игнорируют таймзону т.к. будем сранивать эту дату с
+        # tz-aware datetime.utcnow()
+        date = date_parser.parse(data['date'], ignoretz=True)
         added_urls = []
         for url in urls:
             url = self.add_url(url['url'], date)
@@ -346,7 +346,7 @@ class Parsman:
                     continue
 
                 # И пришло время их парсить
-                if url.date > datetime.now():
+                if url.date > datetime.utcnow():
                     continue
 
                 payload = {'status': str(URLStatus.PARSING), 'uuid': uuid}
