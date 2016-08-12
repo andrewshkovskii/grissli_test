@@ -124,6 +124,11 @@
           }
         }
       }
+      if (message == 'url_add'){
+        if (!url){
+          createURLBlock(payload)
+        }
+      }
     };
 
     var ws = null;
