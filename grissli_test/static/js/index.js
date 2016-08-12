@@ -35,7 +35,7 @@
     var urls = {};
     var pages = [];
     var currentPage = 0;
-    var pageLenght = 3;
+    var pageLength = 3;
     var $pager = $('.pagination');
     var host = document.location.hostname;
     var port = document.location.port || '80';
@@ -79,7 +79,7 @@
         }
       }
 
-      pages = paginateBy(urlsArray, pageLenght);
+      pages = paginateBy(urlsArray, pageLength);
       $('.page-selector').remove();
       for (var i = 0; i < pages.length; i++) {
         $pager.append($(pageTemplate.format(i, i + 1)))
