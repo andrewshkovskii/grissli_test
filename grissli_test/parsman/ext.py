@@ -243,6 +243,11 @@ class Parsman:
                 # Отправим сообщение о смене статуса клиентам
                 self.socket_message('status_change', message['payload'])
 
+                # Оповестить всех клиентов о новом URL
+                if message['payload']['status'] == str(URLStatus.DOWNLOADING):
+                    uuid = message['payload']['uuid']
+                    self.socket_message('url_add', self.urls[uuid].as_dict())
+
     @asyncio.coroutine
     def handle_sock(self, request):
         """Инициировать соединение через websocket.
