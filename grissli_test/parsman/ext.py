@@ -139,9 +139,9 @@ class URL:
     def set_parse_result(self, title, h1, image_src):
         """Записать результат парсинга URL
 
-        :param title:
-        :param h1:
-        :param image_src:
+        :param title: текст тега title
+        :param h1: текст первого тега h1
+        :param image_src: аттрибут src первого тега img
 
         """
         self.title = title
