@@ -38,8 +38,10 @@
     var currentPage = 0;
     var pageLenght = 3;
     var $pager = $('.pagination');
+    var host = document.location.hostname;
+    var port = document.location.port || '80';
 
-    var redrawPaginator = function(pageIndex){
+    var redrawPaginator = function (pageIndex) {
       var selectedPage = pages[pageIndex];
       var i;
 
@@ -97,7 +99,6 @@
       var message = data['message'];
       var payload = data['payload'];
       var url = urls[payload['uuid']];
-
       if (message == 'status_change') {
         var status = payload['status'];
         if (url) {
@@ -124,8 +125,8 @@
           }
         }
       }
-      if (message == 'url_add'){
-        if (!url){
+      if (message == 'url_add') {
+        if (!url) {
           createURLBlock(payload)
         }
       }
@@ -164,7 +165,7 @@
         createURLBlock(url)
       }
 
-      var ws = new WebSocket('ws://127.0.0.1:8000/events/');
+      var ws = new WebSocket('ws://'+ host + ':' + port + '/events/');
 
       ws.onclose = function () {
         alert('Соединение закрыто сервером')
